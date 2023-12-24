@@ -1,0 +1,43 @@
+#!/bin/python3
+
+import socket
+import sys
+import datetime
+
+n = 1
+print("*" * 50)
+print("If you are here, it means you are ready to scan your targets! Let's do it")
+print("*" * 50)
+
+if len(sys.argv) == 2:
+    target = socket.gethostbyname(sys.argv[1])
+else:
+    print('The syntax is not correct')
+    print('Here is the correct one: python3 <filename.py> <target IP@>')
+    sys.exit()
+
+try:
+    for port in range(1, 1025):  # Change the port range as needed
+        print('Ready to scan host' + str(n))
+        n += 1
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Creates a socket object
+        s.settimeout(1)  # Sets connection attempt to the target to 1s
+        c = s.connect_ex((target, port))  # Connection to the target on a port from the range
+
+        if c == 0:  # 0 means the port is open, 1 means the port is closed
+            print('Successful connection to the target')
+            print('The scan process starts at ' + str(datetime.datetime.now()))
+            print(f'Port {port} is open')
+        else:
+            print('Successful connection to the target')
+            print(f'But port {port} is closed')
+
+except KeyboardInterrupt:  # Handles error messages related to keyboard interrupt during the scan
+    print('Exiting the program')
+    sys.exit()
+except socket.error:  # Handles error messages related to connection failure with the target before the scan
+    print('The connection to the target failed')
+    sys.exit()
+except socket.gaierror:  # Handles error messages for hostname resolution failure
+    print('The target hostname could not be resolved!')
+    sys.exit()
