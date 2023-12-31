@@ -1,52 +1,47 @@
+#!/bin/python3
 
-import socket, sys
-from datetime import datetime as dt
-
-margin = ' ' * 30
-print('-'* 100)
-print()
-print(f'{margin} Welcome to this ports\' scan program!')
-print()
-print('-'* 100)
-
-# Target definition
-
-if len(sys.argv) == 2:
-    try:
-        socket.inet_aton(sys.argv[1])
-        if sys.argv[1] == '0.0.0.0':
-            print('This a default IP Address')
-            print('Please enter a valid host\'s IP Address')
-            sys.exit() 
-        else:
-            print('Valid IP Address!')
-    except OSError:
-        print('Invalid IP Address')
-        sys.exit()
-    target = socket.gethostbyname(sys.argv[1])
-else:
-    print('Please enter 02 arguments as follow: "python3 <filename.py> <IP Address>"')
-# Socket setup with IPv4 Familly and TCP as transport protocol
+import socket
+import sys
 
 try:
-    for port in range (1, 1025):
-        print(f'Connection with {target} through port {port}')
+    if len(sys.argv) == 2:
+
+        ip_address = sys.argv[1]
+        if ip_address == '0.0.0.0':
+            print('You provided a default IP Address')
+            print('Please provide a valid host IP Address')
+            sys.exit()
+        
+        ip_check = socket.inet_aton(sys.argv[1])
+        if ip_check:
+            print('Valid IP Address!')
+
+
+    target = socket.gethostbyname(sys.argv[1])
+    for port in range (20, 500):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(1)
         c = s.connect_ex((target, port))
-        print(f'Connection with {target} through port {port} established!')
-
+   
         if c == 0:
-            print(f'Port {port} is open!')
-        else:
-            print(f'Port {port} is closed!')
+           print(f'Port {port} is open')
+        s.close()
+
+except OSError:
+    print('Illegal IP address string')       
     sys.exit()
+     
 except socket.error:
-    print(f'Connection not set up successfully!')
+    print('Connection to target failed!')
     sys.exit()
+    
 except socket.gaierror:
-    print(f'Host name not resolved successfully!')
+    print('Host name resolution failed!')
     sys.exit()
+
+except IndexError:
+    print('Enter an IP Address please')
+    
 except KeyboardInterrupt:
-    print(f'Exciting the program!')
+    print('Exciting the system!')
     sys.exit()
